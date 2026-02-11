@@ -3,7 +3,9 @@ import 'dart:developer';
 import 'package:dio/dio.dart';
 import 'package:flutterapiecommerce/core/network/dio_client.dart';
 import 'package:flutterapiecommerce/features/category/domain/model/categories.dart';
+import 'package:injectable/injectable.dart';
 
+@LazySingleton()
 class CateDataSource {
   final dio = DioClient().client;
 

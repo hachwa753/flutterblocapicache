@@ -2,16 +2,15 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutterapiecommerce/core/routes/app_routes.dart';
 import 'package:flutterapiecommerce/features/category/presentation/blocs/bloc/category_bloc.dart';
-import 'package:flutterapiecommerce/features/category/presentation/screens/category_page.dart';
 import 'package:flutterapiecommerce/features/products/presentation/blocs/bloc/product_bloc.dart';
-import 'package:flutterapiecommerce/features/products/presentation/screen/all_products_page.dart';
-import 'package:flutterapiecommerce/features/products/presentation/screen/detail_page.dart';
 import 'package:flutterapiecommerce/features/products/presentation/screen/product_cat_page.dart';
 import 'package:flutterapiecommerce/features/products/presentation/screen/search_page.dart';
 import 'package:flutterapiecommerce/features/products/presentation/widgets/my_cat_container.dart';
 import 'package:flutterapiecommerce/features/products/presentation/widgets/my_grid_container.dart';
 import 'package:flutterapiecommerce/features/products/presentation/widgets/title_row_widget.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hugeicons/hugeicons.dart';
 
 class HomePage extends StatefulWidget {
@@ -63,10 +62,7 @@ class _HomePageState extends State<HomePage> {
                   title: "Categories",
                   seeAllTxt: "See all",
                   seeAllTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => CategoryPage()),
-                    );
+                    context.push(AppRoutes.categories);
                   },
                 ),
                 SizedBox(height: 10),
@@ -112,12 +108,7 @@ class _HomePageState extends State<HomePage> {
                 SizedBox(height: 10),
                 TitleRowWidget(
                   seeAllTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => AllProductsPage(),
-                      ),
-                    );
+                    context.push(AppRoutes.products);
                   },
                   title: "Products",
                   seeAllTxt: "See all",
@@ -152,13 +143,9 @@ class _HomePageState extends State<HomePage> {
                             children: [
                               GestureDetector(
                                 onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder:
-                                          (context) =>
-                                              DetailPage(product: product),
-                                    ),
+                                  context.push(
+                                    '/homepage/detail',
+                                    extra: product,
                                   );
                                 },
                                 child: MyGridContainer(

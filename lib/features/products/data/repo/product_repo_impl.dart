@@ -1,17 +1,23 @@
 import 'dart:developer';
 
+import 'package:dartz/dartz.dart';
 import 'package:flutterapiecommerce/features/products/data/source/api_source.dart';
 import 'package:flutterapiecommerce/features/products/data/source/local_source.dart';
 import 'package:flutterapiecommerce/features/products/domain/model/product.dart';
 import 'package:flutterapiecommerce/features/products/domain/repo/product_repo.dart';
+import 'package:injectable/injectable.dart';
 
+@LazySingleton(as: ProductRepo)
 class ProductRepoImpl extends ProductRepo {
   final LocalSource localSource;
   final ApiSource apiSource;
 
   ProductRepoImpl(this.apiSource, this.localSource);
   @override
-  Future<List<Product>> fetchAllproducts(int page, int limit) async {
+  Future<Either<String, List<Product>>> fetchAllproducts(
+    int page,
+    int limit,
+  ) async {
     final cachedProducts = localSource.getCachedProducts();
     if (page == 0 && cachedProducts.isNotEmpty) {
       //background update
@@ -20,27 +26,37 @@ class ProductRepoImpl extends ProductRepo {
         log("Background refresh failed: $error");
       });
       // log("Cached length: ${updated.length}");
-      return cachedProducts;
+      return Right(cachedProducts);
     }
     try {
-      return await _fetchProducts(page, limit);
+      return Right(await _fetchProducts(page, limit));
     } catch (e) {
       final cached = localSource.getCachedProducts();
       if (cached.isNotEmpty) {
-        return cached;
+        return Right(cached);
       }
-      throw Exception("Offline and no cached data");
+      return Left("Offline and no cached data");
     }
   }
 
   @override
-  Future<List<Product>> fetchProductsByCategory(String catName) {
-    return apiSource.getProductsByCategory(catName);
+  Future<Either<String, List<Product>>> fetchProductsByCategory(
+    String catName,
+  ) async {
+    try {
+      return Right(await apiSource.getProductsByCategory(catName));
+    } catch (e) {
+      return Left(e.toString());
+    }
   }
 
   @override
-  Future<List<Product>> searchProducts(String query) {
-    return apiSource.getProductsByQuery(query);
+  Future<Either<String, List<Product>>> searchProducts(String query) async {
+    try {
+      return Right(await apiSource.getProductsByQuery(query));
+    } catch (e) {
+      return Left(e.toString());
+    }
   }
 
   Future<List<Product>> _fetchProducts(int page, int limit) async {

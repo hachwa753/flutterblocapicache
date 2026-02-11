@@ -1,6 +1,8 @@
 import 'package:flutterapiecommerce/features/products/domain/model/product.dart';
 import 'package:hive/hive.dart';
+import 'package:injectable/injectable.dart';
 
+@LazySingleton()
 class LocalSource {
   Box<Product> productBox = Hive.box<Product>("productBox");
 
@@ -9,17 +11,6 @@ class LocalSource {
 
   // insert or update products
   Future<void> saveProducts(List<Product> products) async {
-    // 1. Get all existing keys in Hive
-    // final existingKeys = productBox.keys.cast<int>().toSet();
-
-    // // 2. Get all IDs from API
-    // final apiKeys = products.map((p) => p.id).toSet();
-
-    // // 3. Delete products that are no longer in API
-    // final keysToDelete = existingKeys.difference(apiKeys);
-    // for (var key in keysToDelete) {
-    //   await productBox.delete(key);
-    // }
     for (var product in products) {
       await productBox.put(product.id, product);
     }

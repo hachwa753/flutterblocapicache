@@ -3,7 +3,9 @@ import 'dart:developer';
 import 'package:dio/dio.dart';
 import 'package:flutterapiecommerce/core/network/dio_client.dart';
 import 'package:flutterapiecommerce/features/products/domain/model/product.dart';
+import 'package:injectable/injectable.dart';
 
+@LazySingleton()
 class ApiSource {
   final Dio dio = DioClient().client;
 

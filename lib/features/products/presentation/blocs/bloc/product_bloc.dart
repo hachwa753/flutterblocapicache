@@ -4,10 +4,12 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutterapiecommerce/features/products/domain/model/product.dart';
 import 'package:flutterapiecommerce/features/products/domain/repo/product_repo.dart';
+import 'package:injectable/injectable.dart';
 
 part 'product_event.dart';
 part 'product_state.dart';
 
+@Injectable()
 class ProductBloc extends Bloc<ProductEvent, ProductState> {
   final ProductRepo repo;
 
@@ -44,19 +46,26 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
         page = 0;
       }
 
-      final products = await repo.fetchAllproducts(page, limit);
-      final mergedProducts = [
-        ...cachedProducts,
-        ...products.where(
-          (product) => !cachedProducts.any((c) => c.id == product.id),
-        ),
-      ];
-      emit(
-        state.copyWith(
-          productStatus: ProductStatus.loaded,
-          product: mergedProducts,
-          hasReachedMax: products.length < limit,
-        ),
+      final result = await repo.fetchAllproducts(page, limit);
+      result.fold(
+        (error) {
+          print(error);
+        },
+        (products) {
+          final mergedProducts = [
+            ...cachedProducts,
+            ...products.where(
+              (product) => !cachedProducts.any((c) => c.id == product.id),
+            ),
+          ];
+          emit(
+            state.copyWith(
+              productStatus: ProductStatus.loaded,
+              product: mergedProducts,
+              hasReachedMax: products.length < limit,
+            ),
+          );
+        },
       );
     } catch (e) {
       emit(
@@ -78,20 +87,28 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     log(page.toString());
     try {
       // await Future.delayed(Duration(seconds: 5));
-      final products = await repo.fetchAllproducts(page, limit);
-      // merge while avoiding duplicates
-      final newProducts = products.where(
-        (p) => !state.product.any((e) => e.id == p.id),
-      );
-      //final allProducts = List<Product>.from(state.product)..addAll(products);
-      final updatedProducts = [...state.product, ...newProducts];
-      emit(
-        state.copyWith(
-          productStatus: ProductStatus.loaded,
-          product: updatedProducts,
-          isLoadingMore: false,
-          hasReachedMax: newProducts.isEmpty || products.length < limit,
-        ),
+      final result = await repo.fetchAllproducts(page, limit);
+
+      result.fold(
+        (error) {
+          print(error);
+        },
+        (products) {
+          // merge while avoiding duplicates
+          final newProducts = products.where(
+            (p) => !state.product.any((e) => e.id == p.id),
+          );
+          //final allProducts = List<Product>.from(state.product)..addAll(products);
+          final updatedProducts = [...state.product, ...newProducts];
+          emit(
+            state.copyWith(
+              productStatus: ProductStatus.loaded,
+              product: updatedProducts,
+              isLoadingMore: false,
+              hasReachedMax: newProducts.isEmpty || products.length < limit,
+            ),
+          );
+        },
       );
     } catch (e) {
       emit(
@@ -110,13 +127,20 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
   ) async {
     emit(state.copyWith(productByCatStatus: ProductStatus.loading));
     try {
-      final products = await repo.fetchProductsByCategory(event.catName);
+      final result = await repo.fetchProductsByCategory(event.catName);
 
-      emit(
-        state.copyWith(
-          productByCat: products,
-          productByCatStatus: ProductStatus.loaded,
-        ),
+      result.fold(
+        (error) {
+          print(error);
+        },
+        (products) {
+          emit(
+            state.copyWith(
+              productByCat: products,
+              productByCatStatus: ProductStatus.loaded,
+            ),
+          );
+        },
       );
     } catch (e) {
       emit(
@@ -135,12 +159,20 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     emit(state.copyWith(productByQueryStatus: ProductStatus.loading));
 
     try {
-      final products = await repo.searchProducts(event.query);
-      emit(
-        state.copyWith(
-          productByQuery: products,
-          productByQueryStatus: ProductStatus.loaded,
-        ),
+      final result = await repo.searchProducts(event.query);
+
+      result.fold(
+        (error) {
+          print(error);
+        },
+        (products) {
+          emit(
+            state.copyWith(
+              productByQuery: products,
+              productByQueryStatus: ProductStatus.loaded,
+            ),
+          );
+        },
       );
     } catch (e) {
       emit(

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutterapiecommerce/features/products/presentation/blocs/bloc/product_bloc.dart';
-import 'package:flutterapiecommerce/features/products/presentation/screen/detail_page.dart';
 import 'package:flutterapiecommerce/features/products/presentation/widgets/my_grid_container.dart';
+import 'package:go_router/go_router.dart';
 
 class AllProductsPage extends StatefulWidget {
   const AllProductsPage({super.key});
@@ -65,12 +65,7 @@ class _AllProductsPageState extends State<AllProductsPage> {
                     final product = state.product[index];
                     return GestureDetector(
                       onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => DetailPage(product: product),
-                          ),
-                        );
+                        context.push('/homepage/detail', extra: product);
                       },
                       child: MyGridContainer(
                         title: product.title,

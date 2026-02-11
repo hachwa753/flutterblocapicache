@@ -1,34 +1,32 @@
 import 'package:flutter/material.dart';
-import 'package:flutterapiecommerce/features/cart/presentation/screen/cart_page.dart';
-import 'package:flutterapiecommerce/features/products/presentation/screen/home_page.dart';
+import 'package:go_router/go_router.dart';
 
-class RootScreen extends StatefulWidget {
-  const RootScreen({super.key});
+class RootScreen extends StatelessWidget {
+  final StatefulNavigationShell shell;
 
-  @override
-  State<RootScreen> createState() => _RootScreenState();
-}
+  const RootScreen({super.key, required this.shell});
 
-class _RootScreenState extends State<RootScreen> {
-  int selectedIndex = 0;
-  List pages = [HomePage(), CartPage(), Center(child: Text("Profile"))];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      body: shell,
       bottomNavigationBar: NavigationBar(
+        selectedIndex: shell.currentIndex,
+        onDestinationSelected: (value) {
+          shell.goBranch(value);
+        },
         destinations: [
           NavigationDestination(icon: Icon(Icons.home), label: "Home"),
-          NavigationDestination(icon: Icon(Icons.shopping_cart), label: "Cart"),
-          NavigationDestination(icon: Icon(Icons.person), label: "Profile"),
+          NavigationDestination(
+            icon: Icon(Icons.category),
+            label: "Categories",
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.shopping_bag),
+            label: "Products",
+          ),
         ],
-        selectedIndex: selectedIndex,
-        onDestinationSelected: (value) {
-          setState(() {
-            selectedIndex = value;
-          });
-        },
       ),
-      body: pages[selectedIndex],
     );
   }
 }

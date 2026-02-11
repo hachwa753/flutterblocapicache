@@ -2,10 +2,12 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutterapiecommerce/features/category/domain/model/categories.dart';
 import 'package:flutterapiecommerce/features/category/domain/repo/category_repo.dart';
+import 'package:injectable/injectable.dart';
 
 part 'category_event.dart';
 part 'category_state.dart';
 
+@Injectable()
 class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
   final CategoryRepo repo;
   CategoryBloc(this.repo) : super(CategoryState()) {

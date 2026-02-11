@@ -2,7 +2,9 @@ import 'package:flutterapiecommerce/features/category/data/datasource/cate_data_
 import 'package:flutterapiecommerce/features/category/data/datasource/local_source.dart';
 import 'package:flutterapiecommerce/features/category/domain/model/categories.dart';
 import 'package:flutterapiecommerce/features/category/domain/repo/category_repo.dart';
+import 'package:injectable/injectable.dart';
 
+@LazySingleton(as: CategoryRepo)
 class CategoriesRepoImpl extends CategoryRepo {
   final CateDataSource cateDataSource;
   final CatLocalSource localSource;

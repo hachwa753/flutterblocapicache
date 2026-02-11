@@ -1,6 +1,8 @@
 import 'package:flutterapiecommerce/features/category/domain/model/categories.dart';
 import 'package:hive/hive.dart';
+import 'package:injectable/injectable.dart';
 
+@LazySingleton()
 class CatLocalSource {
   final Box<Categories> categoryBox = Hive.box<Categories>('categoryBox');
 
