@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutterapiecommerce/features/cart/presentation/screen/cart_page.dart';
 import 'package:flutterapiecommerce/features/products/presentation/screen/home_page.dart';
 
 class RootScreen extends StatefulWidget {
@@ -10,11 +11,7 @@ class RootScreen extends StatefulWidget {
 
 class _RootScreenState extends State<RootScreen> {
   int selectedIndex = 0;
-  List pages = [
-    HomePage(),
-    Center(child: Text("Cart")),
-    Center(child: Text("Profile")),
-  ];
+  List pages = [HomePage(), CartPage(), Center(child: Text("Profile"))];
   @override
   Widget build(BuildContext context) {
     return Scaffold(

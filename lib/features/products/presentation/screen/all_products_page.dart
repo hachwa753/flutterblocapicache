@@ -45,36 +45,42 @@ class _AllProductsPageState extends State<AllProductsPage> {
               return Center(child: CircularProgressIndicator());
             }
             if (state.productStatus == ProductStatus.loaded) {
-              return GridView.builder(
-                controller: _scrollController,
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  mainAxisExtent: 210,
-                  crossAxisSpacing: 10,
-                ),
-                itemCount: state.product.length + (state.isLoadingMore ? 1 : 0),
-                itemBuilder: (context, index) {
-                  if (index == state.product.length) {
-                    return Center(child: CircularProgressIndicator());
-                  }
-                  final product = state.product[index];
-                  return GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => DetailPage(product: product),
-                        ),
-                      );
-                    },
-                    child: MyGridContainer(
-                      title: product.title,
-                      thumbnail: product.thumbnail,
-                      price: "\$${product.price}",
-                      rating: product.rating.toString(),
-                    ),
-                  );
+              return RefreshIndicator(
+                onRefresh: () async {
+                  context.read<ProductBloc>().add(FetchAllProducts());
                 },
+                child: GridView.builder(
+                  controller: _scrollController,
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    mainAxisExtent: 210,
+                    crossAxisSpacing: 10,
+                  ),
+                  itemCount:
+                      state.product.length + (state.isLoadingMore ? 1 : 0),
+                  itemBuilder: (context, index) {
+                    if (index == state.product.length) {
+                      return Center(child: CircularProgressIndicator());
+                    }
+                    final product = state.product[index];
+                    return GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => DetailPage(product: product),
+                          ),
+                        );
+                      },
+                      child: MyGridContainer(
+                        title: product.title,
+                        thumbnail: product.thumbnail,
+                        price: "\$${product.price}",
+                        rating: product.rating.toString(),
+                      ),
+                    );
+                  },
+                ),
               );
             }
             return SizedBox();
